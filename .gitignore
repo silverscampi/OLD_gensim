@@ -35,3 +35,4 @@ models/risc-v/output-riscv32/
 models/risc-v/output-riscv64/
 scripts/archsim-armv7a-user
 scripts/archsim-x86_64-user
+tests/gensim-test-artifacts-prefix/
