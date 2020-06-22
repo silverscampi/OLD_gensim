@@ -23,3 +23,15 @@ CMakeCache.txt
 
 dist/
 gtest/
+
+gensim/src/grammar/archCBehaviour/
+gensim/src/grammar/archCuArch/
+gensim/src/grammar/archc/
+gensim/src/grammar/archcasm/
+gensim/src/grammar/genC/
+gensim/src/grammar/ssa_asm/
+models/armv7/output-armv7a/
+models/risc-v/output-riscv32/
+models/risc-v/output-riscv64/
+scripts/archsim-armv7a-user
+scripts/archsim-x86_64-user
