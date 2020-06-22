@@ -120,6 +120,9 @@ AC_ISA(arm)
 	ac_instr<Type_CRT> mcr_fpu, mrc_fpu;
 	ac_instr<Type_CRT> wfi, cf1, cf2;
 	ac_instr<Type_CLS> ldc, stc;
+	// Trivial NOP instruction
+	// 'nop' is already an instruction in ARMv7
+	ac_instr<Type_CRT> noop;
 	
 	// Special instructions
 	ac_instr<Type_MBKPT> bkpt;
@@ -377,6 +380,7 @@ AC_ISA(arm)
 	ac_behaviour mrc;
 	ac_behaviour ldc;
 	ac_behaviour stc;
+	ac_behaviour noop;
 
 	/*** Special instructions ***/
 	ac_behaviour bkpt;
@@ -1401,6 +1405,10 @@ AC_ISA(arm)
 	        stc.set_decoder(op=0x06, l=0x00);
 		stc.set_asm("stc%cond %imm, %imm", cond, crd, imm8);
 		stc.set_behaviour(stc);
+
+		noop.set_decoder(op=0x07, subop1=0x01, subop3=0x00, l=0x01, cp_num=4);
+		noop.set_behaviour(noop);
+		
 
 		/**************************************/
 		/*        Special Instructions        */
