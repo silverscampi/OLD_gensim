@@ -1406,7 +1406,7 @@ AC_ISA(arm)
 		stc.set_asm("stc%cond %imm, %imm", cond, crd, imm8);
 		stc.set_behaviour(stc);
 
-		noop.set_decoder(op=0x07, subop1=0x01, subop3=0x00, l=0x01, cp_num=4);
+		noop.set_decoder(op=0x07, subop1=0x01, subop3=0x00, l=0x01, cp_num=2);
 		noop.set_behaviour(noop);
 		
 
