@@ -1963,15 +1963,32 @@ execute(tmplcpy)
 	cbp = read_register_bank(RB, inst.rd+1);
 	ir = read_register_bank(RB, inst.rd+2);
 
+	// do the copying
 	if (memory_read_32(tbp+(ir*4), num_instr)) {				// attempt read first word at tbp+ir into num_instr
-		for (int i=1; i<=num_instr; ++i) {						// loop num_instr times to copy words from tb to cb
-			 if (memory_read_32(tbp+(ir+i)*4, word) {			// attempt read word at next position
-				 if (memory_write_32(cbp, word) {				// attempt write word into cb
+		uint32 i = 1;
+		while( i <= num_instr) {								// loop num_instr times to copy words from tb to cb
+			 if (memory_read_32(tbp+(ir+i)*4, word)) {			// attempt read word at next position
+				 if (memory_write_32(cbp, word)) {				// attempt write word into cb
+					write_register_bank(RB, inst.rd+1, cbp+4);	// if all successful, increment cbp to point at next empty position
+				 }
+			 }
+			 ++i;
+		}
+	}
+
+	// try while instead of for?
+	/* 
+	if (memory_read_32(tbp+(ir*4), num_instr)) {				// attempt read first word at tbp+ir into num_instr
+		for (uint32 i=1; i<=num_instr; ++i) {						// loop num_instr times to copy words from tb to cb
+			 if (memory_read_32(tbp+(ir+i)*4, word)) {			// attempt read word at next position
+				 if (memory_write_32(cbp, word)) {				// attempt write word into cb
 					write_register_bank(RB, inst.rd+1, cbp+4);	// if all successful, increment cbp to point at next empty position
 				 }
 			 }
 		}
 	}
+	*/
+
 
 
 }
