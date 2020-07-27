@@ -1943,6 +1943,39 @@ execute(noop)
 	// no op
 }
 
+/* (see decode.cpp)
+	inst.cp_num
+	inst.rd
+	inst.crn
+	inst.crm
+	inst.funcc2 ('opc1' in arm ref manual)
+*/
+execute(tmplcpy)
+{
+	uint32 tbp;
+	uint32 cbp;
+	uint32 ir;
+	uint32 num_instr;
+	uint32 word;
+
+	// get operands
+	tbp = read_register_bank(RB, inst.rd);
+	cbp = read_register_bank(RB, inst.rd+1);
+	ir = read_register_bank(RB, inst.rd+2);
+
+	if (memory_read_32(tbp+(ir*4), num_instr)) {				// attempt read first word at tbp+ir into num_instr
+		for (int i=1; i<=num_instr; ++i) {						// loop num_instr times to copy words from tb to cb
+			 if (memory_read_32(tbp+(ir+i)*4, word) {			// attempt read word at next position
+				 if (memory_write_32(cbp, word) {				// attempt write word into cb
+					write_register_bank(RB, inst.rd+1, cbp+4);	// if all successful, increment cbp to point at next empty position
+				 }
+			 }
+		}
+	}
+
+
+}
+
 ////////////////////////////////////////////////////////
 ////	CLS instructions
 ////////////////////////////////////////////////////////
