@@ -55,6 +55,10 @@ AC_ISA(arm)
 	ac_format Type_MMSR2 = "%cond:4 %op!:3 %func11!:2 %r:1 %func12!:2 %fieldmask:4 0xf:4 %rotate:4 %imm8:8";
 	/*ac_format Type_WFI = "%cond:4 0x32:8 0x0:4 %sbo!:4 %sbz!:4 0x03:8";*/
 
+	/* Custom template JIT instructions */
+	// ac_format Type_TMPL = "0xf7f:12 %rn:4 %rm:4 %rd:4 0xf0:8";
+	ac_format Type_TMPL = "0xf7f:12 %rd:4 %rn:4 %rm:4 0xf0:8";
+
 	@notpred
 	ac_format Type_PLD = "0xf:4 0x1:2 %i:1 0x1:1 %u:1 0x5:3 %rn:4, 0xf:4 %addr:12";
 
@@ -127,6 +131,9 @@ AC_ISA(arm)
 	ac_instr<Type_MCLZ> clz;
 	ac_instr<Type_MMSR1> mrs, msr1;
 	ac_instr<Type_MMSR2> msr2;
+
+	// Custom template JIT instructions
+	ac_instr<Type_TMPL> tplcpy;
 
 	//  DSP multiplication instructions 
 	// The type of LSE Load / Store has DSP instructions (LDRD and strd)
@@ -386,6 +393,9 @@ AC_ISA(arm)
 	ac_behaviour msr1;
 	ac_behaviour msr2;
 	ac_behaviour wfi;
+
+	/*** Custom template JIT instructions ***/
+	ac_behaviour tplcpy;
 
 	/*** DSP multiplication instructions ***/ 
 //	ac_behaviour dsmla;
@@ -861,7 +871,7 @@ AC_ISA(arm)
 		//	ldrbt1.set_reads_pc(rn = 15);
 
 		ldr1.set_decoder(op=0x02, b=0x00, l=0x01);
-		ldr1.set_asm("pop%[cond] {%reg}", cond, rd, rn=13, imm32=4, u=1,p=0,w=0);
+		ldr1.set_asm("pop%[cond] {%reg}", cond, rd, rn=13, imm32=4, u=1,p=0,w=0);	// POP A2
 		ldr1.set_asm("ldr%[cond] %reg, [%reg]", cond, rd, rn, imm32=0, p=1, u=1, w=0);
 		ldr1.set_asm("ldr%[cond] %reg, [%reg, #0]", cond, rd, rn, rn=15, imm32=0, p=1, u=1, w=0);
 		
@@ -914,7 +924,7 @@ AC_ISA(arm)
 		//	ldrb1.set_reads_pc(rn = 15);
 
 		str1.set_decoder(op=0x02, b=0x00, l=0x00);
-		str1.set_asm("push%cond {%reg}", cond, rd, rn=13, imm32=4, p=1, u=0, w=1);
+		str1.set_asm("push%cond {%reg}", cond, rd, rn=13, imm32=4, p=1, u=0, w=1);	// PUSH A2
 		
 		str1.set_asm("str%[cond] %reg, [%reg]", cond, rd, rn, imm32=0x0, p=1, u=1, w=0);
     		str1.set_asm("str%[cond] %reg, [%reg, #+%imm]", cond, rd, rn, imm32, p=1, u=1, w=0);
@@ -1312,7 +1322,7 @@ AC_ISA(arm)
 
 		ldm.set_decoder(op=0x04, l=0x01, r=0);
 		
-		ldm.set_asm("pop%cond {%reg...}", cond, imm32, r=0, w=1, rn=13);
+		ldm.set_asm("pop%cond {%reg...}", cond, imm32, r=0, w=1, rn=13);	// POP A1
 		
 		ldm.set_asm("ldm%[cond] %reg, {%reg...}", cond, rn, imm32, r=0, w=0);    
 		ldm.set_asm("ldm%[cond] %reg!, {%reg...}", cond, rn, imm32, r=0, w=1);  
@@ -1332,7 +1342,7 @@ AC_ISA(arm)
 		
 		stm.set_decoder(op=0x04, l=0x00, r=0);
 		
-		stm.set_asm("push%cond {%reg...}", cond, imm32, r=0, w=1, rn=13);
+		stm.set_asm("push%cond {%reg...}", cond, imm32, r=0, w=1, rn=13);	// PUSH A1
 		
 		stm.set_asm("stm%memmultu%memmultp%cond %reg, {%reg...}", u, p, cond, rn, imm32, r=0, w=0);
 		stm.set_asm("stm%memmultu%memmultp%cond %reg!, {%reg...}", u, p, cond, rn, imm32, r=0, w=1);
@@ -1398,13 +1408,22 @@ AC_ISA(arm)
 		ldc.set_asm("LDC");
 		ldc.set_behaviour(ldc);
   
-	        stc.set_decoder(op=0x06, l=0x00);
+	    stc.set_decoder(op=0x06, l=0x00);
 		stc.set_asm("stc%cond %imm, %imm", cond, crd, imm8);
 		stc.set_behaviour(stc);
 
 		/**************************************/
 		/*        Special Instructions        */
 		/**************************************/
+
+
+		/**************************************/
+		/*  Custom Template JIT Instructions  */
+		/**************************************/
+		tplcpy.set_decoder();
+		tplcpy.set_behaviour(tplcpy);
+
+
 
 		/**************************************/
 		/*          MBKPT Instructions        */
