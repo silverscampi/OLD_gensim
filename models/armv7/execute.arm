@@ -1947,36 +1947,20 @@ execute(mrc_fpu)
 ////	TMPL instructions
 ////////////////////////////////////////////////////////
 
-execute(tplcpy) 
+execute(tplbrc) 
 {
 	uint32 cbp;
-	uint32 tbp;
-	uint32 ir;
-	uint32 num_instr;
+	uint32 tbp_brc;
 	uint32 word;
 
 	// get operands
 	cbp = read_register_bank(RB, inst.rd);
-	tbp = read_register_bank(RB, inst.rn);
-	ir  = read_register_bank(RB, inst.rm);
+	tbp_brc = read_register_bank(RB, inst.rn);
 
-	// copy - just one or two words for now
-	if (memory_read_32(tbp+(ir*4), num_instr)) {
-		// read one word in any case
-		if (memory_read_32(tbp+((ir+1)*4), word)) {
-			if (memory_write_32(cbp, word)) {
-				write_register_bank(RB, inst.rd, cbp+4);
-				cbp += 4;
-			}
-		}
-		// if buf said there's 2 words, copy second too
-		if (num_instr == 2) {
-			if (memory_read_32(tbp+((ir+2)*4), word)) {
-				if (memory_write_32(cbp, word)) {
-					write_register_bank(RB, inst.rd, cbp+4);
-					cbp += 4;
-				}
-			}
+	// just one word for first pass for now
+	if (memory_read_32(tbp_brc, word)) {
+		if (memory_write_32(cbp, word)) {
+			write_register_bank(RB, inst.rd, cbp+4);
 		}
 	}
 }
