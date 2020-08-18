@@ -2027,6 +2027,48 @@ execute(tplfix)
 }
 
 
+execute(tplpop)
+{
+	uint32 cbp;
+	uint32 tbp_pop;
+	uint32 ir;
+	uint32 word;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rd);
+	tbp_pop = read_register_bank(RB, inst.rn);
+	ir = read_register_bank(RB, inst.rm);
+
+	// copy pop in every case
+	if (memory_read_32(tbp_pop, word)) {
+		if (memory_write_32(cbp, word)) {
+			write_register_bank(RB, inst.rd, cbp+4);
+			cbp += 4;
+		}
+	}
+	// then get next word needed
+	if (memory_read_32(tbp_pop+(ir*4), word)) {
+		if (memory_write_32(cbp, word)) {
+			write_register_bank(RB, inst.rd, cbp+4);
+		}
+	}
+}
+
+
+execute(tplcmp)
+{
+	uint32 cbp;
+	uint32 tbp_cmp;
+	uint32 ir;
+	uint32 word;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rd);
+	tbp_cmp = read_register_bank(RB, inst.rn);
+	ir = read_register_bank(RB, inst.rm);
+
+	
+}
 
 ////////////////////////////////////////////////////////
 ////	MBKPT instruction

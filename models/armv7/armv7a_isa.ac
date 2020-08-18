@@ -133,7 +133,7 @@ AC_ISA(arm)
 	ac_instr<Type_MMSR2> msr2;
 
 	// Custom template JIT instructions
-	ac_instr<Type_TMPL> tplbrc, tplfix;
+	ac_instr<Type_TMPL> tplbrc, tplfix, tplpop, tplcmp;
 
 	//  DSP multiplication instructions 
 	// The type of LSE Load / Store has DSP instructions (LDRD and strd)
@@ -397,6 +397,8 @@ AC_ISA(arm)
 	/*** Custom template JIT instructions ***/
 	ac_behaviour tplbrc;
 	ac_behaviour tplfix;
+	ac_behaviour tplpop;
+	ac_behaviour tplcmp;
 
 	/*** DSP multiplication instructions ***/ 
 //	ac_behaviour dsmla;
@@ -1421,11 +1423,17 @@ AC_ISA(arm)
 		/**************************************/
 		/*  Custom Template JIT Instructions  */
 		/**************************************/
-		tplbrc.set_decoder(fun=0xe);		// f7e...
+		tplbrc.set_decoder(fun=0xc);		// f7c...
 		tplbrc.set_behaviour(tplbrc);
 
-		tplfix.set_decoder(fun=0xf);		// f7f...
+		tplfix.set_decoder(fun=0xd);		// f7d...
 		tplfix.set_behaviour(tplfix);
+
+		tplpop.set_decoder(fun=0xe);		// f7e...
+		tplpop.set_behaviour(tplpop);
+
+		tplcmp.set_decoder(fun=0xf);		// f7f...
+		tplcmp.set_behaviour(tplcmp);	
 
 		
 
