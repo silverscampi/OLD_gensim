@@ -1965,6 +1965,69 @@ execute(tplbrc)
 	}
 }
 
+execute(tplfix) 
+{
+	uint32 cbp;
+	uint32 tbp_fix;
+	uint32 ir;
+	uint32 num_instr;
+	uint32 word;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rd);
+	tbp_fix = read_register_bank(RB, inst.rn);
+	ir  = read_register_bank(RB, inst.rm);
+
+	// copy words
+	if (memory_read_32(tbp_fix+(ir*4), num_instr)) {
+		// first (LEV, LI, PSH, CLCA)
+		if (memory_read_32(tbp_fix+((ir+1)*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
+			}
+		}
+		// second (LEV, CLCA)
+		if (num_instr >= 2) {
+			if (memory_read_32(tbp_fix+((ir+2)*4), word)) {
+				if (memory_write_32(cbp, word)) {
+					write_register_bank(RB, inst.rd, cbp+4);
+					cbp += 4;
+				}
+			}
+		}
+		// third-sixth (CLCA)
+		if (num_instr == 6) {
+			if (memory_read_32(tbp_fix+((ir+3)*4), word)) {
+				if (memory_write_32(cbp, word)) {
+					write_register_bank(RB, inst.rd, cbp+4);
+					cbp += 4;
+				}
+			}
+			if (memory_read_32(tbp_fix+((ir+4)*4), word)) {
+				if (memory_write_32(cbp, word)) {
+					write_register_bank(RB, inst.rd, cbp+4);
+					cbp += 4;
+				}
+			}
+			if (memory_read_32(tbp_fix+((ir+5)*4), word)) {
+				if (memory_write_32(cbp, word)) {
+					write_register_bank(RB, inst.rd, cbp+4);
+					cbp += 4;
+				}
+			}
+			if (memory_read_32(tbp_fix+((ir+6)*4), word)) {
+				if (memory_write_32(cbp, word)) {
+					write_register_bank(RB, inst.rd, cbp+4);
+					cbp += 4;
+				}
+			}
+		}
+	}
+}
+
+
+
 ////////////////////////////////////////////////////////
 ////	MBKPT instruction
 ////////////////////////////////////////////////////////
