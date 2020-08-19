@@ -2019,7 +2019,6 @@ execute(tplfix)
 			if (memory_read_32(tbp_fix+((ir+6)*4), word)) {
 				if (memory_write_32(cbp, word)) {
 					write_register_bank(RB, inst.rd, cbp+4);
-					cbp += 4;
 				}
 			}
 		}
@@ -2046,6 +2045,16 @@ execute(tplpop)
 			cbp += 4;
 		}
 	}
+
+	// if EQ-LE
+	if (ir == 11) {
+		if (memory_read_32(tbp_pop+(11*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+4);
+			}
+		}
+	}
+	// if any other
 	// then get next word needed
 	if (memory_read_32(tbp_pop+(ir*4), word)) {
 		if (memory_write_32(cbp, word)) {
@@ -2060,6 +2069,7 @@ execute(tplcmp)
 	uint32 cbp;
 	uint32 tbp_cmp;
 	uint32 ir;
+	uint16 half;
 	uint32 word;
 
 	// get operands
@@ -2067,6 +2077,32 @@ execute(tplcmp)
 	tbp_cmp = read_register_bank(RB, inst.rn);
 	ir = read_register_bank(RB, inst.rm);
 
+	if (ir % 4 == 0) { // EQ, LT, GT
+		if (memory_read_16(tbp_cmp, half)) {
+			if (memory_write_32(cbp, ((half << 16) | 1))) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
+			}
+		}
+		if (memory_read_16(tbp_cmp+2, half)) {
+			if (memory_write_32(cbp, (half << 16))) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
+			}
+		}
+	} else {		// NE, GE, LE
+		if (memory_read_16(tbp_cmp, half)) {
+			if (memory_write_32(cbp, (half << 16))) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
+			}
+		}
+		if (memory_read_16(tbp_cmp+2, half)) {
+			if (memory_write_32(cbp, ((half << 16) | 1))) {
+				write_register_bank(RB, inst.rd, cbp+4);
+			}
+		}
+	}
 	
 }
 
