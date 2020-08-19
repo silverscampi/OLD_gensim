@@ -2055,21 +2055,6 @@ execute(tplpop)
 }
 
 
-execute(tplcmp)
-{
-	uint32 cbp;
-	uint32 tbp_cmp;
-	uint32 ir;
-	uint32 word;
-
-	// get operands
-	cbp = read_register_bank(RB, inst.rd);
-	tbp_cmp = read_register_bank(RB, inst.rn);
-	ir = read_register_bank(RB, inst.rm);
-
-	
-}
-
 ////////////////////////////////////////////////////////
 ////	MBKPT instruction
 ////////////////////////////////////////////////////////
