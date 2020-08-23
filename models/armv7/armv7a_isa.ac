@@ -56,8 +56,9 @@ AC_ISA(arm)
 	/*ac_format Type_WFI = "%cond:4 0x32:8 0x0:4 %sbo!:4 %sbz!:4 0x03:8";*/
 
 	/* Custom template JIT instructions */
-	//ac_format Type_TMPL = "0xf7f:12 %rd:4 %rn:4 %rm:4 0xf0:8";
+	ac_format Type_TMPLI = "0xf7f:12 %rd:4 %rn:4 %rm:4 %ri:4 0x0:4";
 	ac_format Type_TMPL = "0xf7:8 %fun:4 %rd:4 %rn:4 %rm:4 0xf0:8";
+
 
 	@notpred
 	ac_format Type_PLD = "0xf:4 0x1:2 %i:1 0x1:1 %u:1 0x5:3 %rn:4, 0xf:4 %addr:12";
@@ -134,6 +135,7 @@ AC_ISA(arm)
 
 	// Custom template JIT instructions
 	ac_instr<Type_TMPL> tplbrc, tplfix, tplpop;
+	ac_instr<Type_TMPLI> tplvar;
 
 	//  DSP multiplication instructions 
 	// The type of LSE Load / Store has DSP instructions (LDRD and strd)
@@ -398,6 +400,7 @@ AC_ISA(arm)
 	ac_behaviour tplbrc;
 	ac_behaviour tplfix;
 	ac_behaviour tplpop;
+	ac_behaviour tplvar;
 
 	/*** DSP multiplication instructions ***/ 
 //	ac_behaviour dsmla;
@@ -1422,16 +1425,18 @@ AC_ISA(arm)
 		/**************************************/
 		/*  Custom Template JIT Instructions  */
 		/**************************************/
-		tplbrc.set_decoder(fun=0xd);		// f7d...
+		tplbrc.set_decoder(fun=0xc);		// f7c...f0
 		tplbrc.set_behaviour(tplbrc);
 
-		tplfix.set_decoder(fun=0xe);		// f7e...
+		tplfix.set_decoder(fun=0xd);		// f7d...f0
 		tplfix.set_behaviour(tplfix);
 
-		tplpop.set_decoder(fun=0xf);		// f7f...
+		tplpop.set_decoder(fun=0xe);		// f7e...f0
 		tplpop.set_behaviour(tplpop);
 
-		
+		tplvar.set_decoder();				// f7f....0
+		tplvar.set_behaviour(tplvar);
+
 
 		/**************************************/
 		/*          MBKPT Instructions        */

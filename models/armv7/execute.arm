@@ -2120,6 +2120,87 @@ execute(tplpop)
 }
 
 
+execute(tplvar)
+{
+	uint32 cbp;
+	uint32 tbp_var;
+	uint32 ir;
+	uint32 pc;
+	uint32 word;
+	uint32 tmp;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rd);
+	tbp_var = read_register_bank(RB, inst.rn);
+	ir = read_register_bank(RB, inst.rm);
+	pc = read_register_bank(RB, inst.ri);
+
+	tmp = memory_read_32(pc, tmp);
+
+	// LEA
+	if (ir == 30) {
+		if (tmp >= 0) {
+			if (memory_read_32(tbp_var, word)) {
+				if (memory_write_32(cbp, (word | (tmp * 4)))) {
+					write_register_bank(RB, inst.rd, cbp+4);
+				}
+			}
+		} else {
+			if (memory_read_32(tbp_var+4, word)) {
+				if (memory_write_32(cbp, (word | ((-tmp) * 4)))) {
+					write_register_bank(RB, inst.rd, cbp+4);
+				}
+			}
+		}
+	// ADJ
+	} else if (ir == 31) {
+		if (memory_read_32(tbp_var+(2*4), word)) {
+			if (memory_write_32(cbp, (word | (tmp * 4)))) {
+				write_register_bank(RB, inst.rd, cbp+4);
+			}
+		}
+	// ENT
+	} else if (ir == 33) {
+		if (memory_read_32(tbp_var+(3*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp +=4;
+			}
+		}
+		if (memory_read_32(tbp_var+(4*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp +=4;
+			}
+		}
+		if (tmp) {
+			if (memory_read_32(tbp_var+(5*4), word)) {
+				if (memory_write_32(cbp, (word | (tmp * 4)))) {
+					write_register_bank(RB, inst.rd, cbp+4);
+				}
+			}
+		}
+	// LC	
+	} else if (ir == 34) {
+		if (memory_read_32(tbp_var+(6*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
+			}
+		}
+		if (tmp) {
+			if (memory_read_32(tbp_var+(7*4), word)) {
+				if (memory_write_32(cbp, word)) {
+					write_register_bank(RB, inst.rd, cbp+4);
+				}
+			}
+		}
+	}
+
+	// increment pc
+	write_register_bank(RB, inst.ri, pc+4);
+}
+
 ////////////////////////////////////////////////////////
 ////	MBKPT instruction
 ////////////////////////////////////////////////////////
