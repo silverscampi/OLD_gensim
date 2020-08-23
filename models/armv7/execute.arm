@@ -2033,9 +2033,15 @@ execute(tplpop)
 	uint32 ir;
 	uint32 word;
 
+	uint32 tbp_cmp;
+	uint16 half;
+	uint32 word0;
+	uint32 word1;
+
 	// get operands
 	cbp = read_register_bank(RB, inst.rd);
 	tbp_pop = read_register_bank(RB, inst.rn);
+	tbp_cmp = tbp_pop + (12 * 4);
 	ir = read_register_bank(RB, inst.rm);
 
 	// copy pop in every case
@@ -2047,10 +2053,11 @@ execute(tplpop)
 	}
 
 	// if EQ-LE
-	if (ir == 11) {
+	if (ir >= 11) {
 		if (memory_read_32(tbp_pop+(11*4), word)) {
 			if (memory_write_32(cbp, word)) {
 				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
 			}
 		}
 	}
@@ -2059,68 +2066,59 @@ execute(tplpop)
 	if (memory_read_32(tbp_pop+(ir*4), word)) {
 		if (memory_write_32(cbp, word)) {
 			write_register_bank(RB, inst.rd, cbp+4);
+			cbp += 4;
 		}
 	}
-}
 
 
-execute(tplcmp)
-{
-	uint32 cbp;
-	uint32 tbp_cmp;
-	uint32 ir;
-	uint16 half;
-	uint32 word0;
-	uint32 word1;
-
-	// get operands
-	cbp = read_register_bank(RB, inst.rd);
-	tbp_cmp = read_register_bank(RB, inst.rn);
-	ir = read_register_bank(RB, inst.rm);
-
+	// do rest of EQ-LE
 	// the offets look backwards. but they produce correct behaviour.
 	//	i think mem_read_16 is a little weird
-	// EQ, NE
-	if (ir <= 2) {
-		if (memory_read_16(tbp_cmp+2, half)) {
-			word0 = (((uint32)half) << 16 );
+	if (ir >= 11) {
+		ir = (ir - 11) * 2;
+		// EQ, NE
+		if (ir <= 2) {
+			if (memory_read_16(tbp_cmp+2, half)) {
+				word0 = (((uint32)half) << 16 );
+			}
+			if (memory_read_16(tbp_cmp+0, half)) {
+				word1 = (((uint32)half) << 16 );
+			}
+		// LT, GE
+		} else if (ir <= 6) {
+			if (memory_read_16(tbp_cmp+6, half)) {
+				word0 = (((uint32)half) << 16 );
+			}
+			if (memory_read_16(tbp_cmp+4, half)) {
+				word1 = (((uint32)half) << 16 );
+			}
+		// GT, LE
+		} else if (ir <= 10) {
+			if (memory_read_16(tbp_cmp+10, half)) {
+				word0 = (((uint32)half) << 16 );
+			}
+			if (memory_read_16(tbp_cmp+8, half)) {
+				word1 = (((uint32)half) << 16 );
+			}
 		}
-		if (memory_read_16(tbp_cmp+0, half)) {
-			word1 = (((uint32)half) << 16 );
-		}
-	// LT, GE
-	} else if (ir <= 6) {
-		if (memory_read_16(tbp_cmp+6, half)) {
-			word0 = (((uint32)half) << 16 );
-		}
-		if (memory_read_16(tbp_cmp+4, half)) {
-			word1 = (((uint32)half) << 16 );
-		}
-	// GT, LE
-	} else if (ir <= 10) {
-		if (memory_read_16(tbp_cmp+10, half)) {
-			word0 = (((uint32)half) << 16 );
-		}
-		if (memory_read_16(tbp_cmp+8, half)) {
-			word1 = (((uint32)half) << 16 );
-		}
-	}
 
-	// EQ, LT, GT
-	if (ir % 4 == 0) {
-		word0 = word0 | 1;
-	// NE, GE, LE
-	} else {
-		word1 = word1 | 1;
-	}
+		// EQ, LT, GT
+		if (ir % 4 == 0) {
+			word0 = word0 | 1;
+		// NE, GE, LE
+		} else {
+			word1 = word1 | 1;
+		}
 
-	// write out
-	if (memory_write_32(cbp, word0)) {
-		if (memory_write_32(cbp+4, word1)) {
-			write_register_bank(RB, inst.rd, cbp+8);
+		// write out
+		if (memory_write_32(cbp, word0)) {
+			if (memory_write_32(cbp+4, word1)) {
+				write_register_bank(RB, inst.rd, cbp+8);
+			}
 		}
 	}
 }
+
 
 ////////////////////////////////////////////////////////
 ////	MBKPT instruction
