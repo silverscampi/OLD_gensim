@@ -2129,6 +2129,7 @@ execute(tplvar)
 	uint32 cbp;
 	uint32 tbp_var;
 	uint32 ir;
+	uint32 pc;
 	uint32 var;
 	uint32 word;
 
@@ -2136,7 +2137,8 @@ execute(tplvar)
 	cbp = read_register_bank(RB, inst.rd);
 	tbp_var = read_register_bank(RB, inst.rn);
 	ir = read_register_bank(RB, inst.rm);
-	var = read_register_bank(RB, inst.var);
+	pc = read_register_bank(RB, inst.rv);
+	memory_read_32(pc, var);
 
 	// LEA
 	if (ir == 30) {
@@ -2153,7 +2155,11 @@ execute(tplvar)
 				}
 			}
 		}
-	} 
+	}
+
+	if (ir < 34) {
+		write_register_bank(RB, inst.rv, pc+4);
+	}
 }
 
 ////////////////////////////////////////////////////////

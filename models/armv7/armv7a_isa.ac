@@ -56,7 +56,7 @@ AC_ISA(arm)
 	/*ac_format Type_WFI = "%cond:4 0x32:8 0x0:4 %sbo!:4 %sbz!:4 0x03:8";*/
 
 	/* Custom template JIT instructions */
-	ac_format Type_TMPLV = "0xf7f:12 %rd:4 %rn:4 %rm:4 %var:4 0x0:4";
+	ac_format Type_TMPLV = "0xf7f:12 %rd:4 %rn:4 %rm:4 %rv:4 0x0:4";
 	ac_format Type_TMPL = "0xf7:8 %fun:4 %rd:4 %rn:4 %rm:4 0xf0:8";
 
 
