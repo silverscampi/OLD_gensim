@@ -2183,6 +2183,21 @@ execute(tplvar)
 				}
 			}
 		}
+	// LC
+	} else if (ir == 34) {
+		if (memory_read_32(tbp_var+(6*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
+			}
+		}
+		if (var == 1) {
+			if (memory_read_32(tbp_var+(7*4), word)) {
+				if (memory_write_32(cbp, word)) {
+					write_register_bank(RB, inst.rd, cbp+4);
+				}
+			}
+		}
 	}
 
 	if (ir < 34) {
