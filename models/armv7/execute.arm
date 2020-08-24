@@ -12,7 +12,9 @@ helper uint32 read_gpr(uint32 index) {
 	}
 }
 
-
+helper uint32 twosnegate(uint32 twos) {
+	return (~(twos - 1));
+}
 
 execute(pld)
 {
