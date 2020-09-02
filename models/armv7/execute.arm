@@ -2060,7 +2060,7 @@ execute(tplpop)
 				cbp += 4;
 			}
 		}
-	}
+	} else {
 	// if any other
 	// then get next word needed
 	if (memory_read_32(tbp_pop+(ir*4), word)) {
@@ -2069,6 +2069,8 @@ execute(tplpop)
 			cbp += 4;
 		}
 	}
+	}
+
 
 
 	// do rest of EQ-LE
