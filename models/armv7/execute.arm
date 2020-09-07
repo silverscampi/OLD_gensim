@@ -1944,6 +1944,33 @@ execute(mrc_fpu)
 
 
 ////////////////////////////////////////////////////////
+////	TMPL instructions
+////////////////////////////////////////////////////////
+
+execute(tplcpy) {
+	uint32 cbp;
+	uint32 tbp;
+	uint32 ir;
+	uint32 num_instr;
+	uint32 word;
+	uint32 retn;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rd);
+	tbp = read_register_bank(RB, inst.rn);
+	ir  = read_register_bank(RB, inst.rm);
+
+	// copy words
+	if (memory_read_32(tbp+(ir*4), num_instr)) {
+		if (num_instr == 0xffffffff) {
+			retn = 1;
+			return retn;
+		}
+	} 
+}
+
+
+////////////////////////////////////////////////////////
 ////	MBKPT instruction
 ////////////////////////////////////////////////////////
 
