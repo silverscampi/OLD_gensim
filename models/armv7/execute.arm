@@ -2040,10 +2040,10 @@ execute(tplcpy) {
 	tbp = read_register_bank(RB, inst.rn);
 	ir  = read_register_bank(RB, inst.rm);
 
-	if (ir == 2 || ir == 3 || ir == 4 || ir >= 78) { // no support
+	if (ir == 2 || ir == 3 || ir == 4 || ir == 16 || ir >= 78) { // no support
 		write_register_bank(RB, inst.rr, 2);
 		return;
-	} else if (ir <= 10 ) { // tplvar ones
+	} else if (ir <= 10) { // tplvar ones
 		write_register_bank(RB, inst.rr, 1);
 		return;
 	}
