@@ -12,6 +12,10 @@ helper uint32 read_gpr(uint32 index) {
 	}
 }
 
+helper uint32 twosnegate(uint32 twos) {
+	return (~(twos - 1));
+}
+
 execute(pld)
 {
 
@@ -1947,6 +1951,83 @@ execute(mrc_fpu)
 ////	TMPL instructions
 ////////////////////////////////////////////////////////
 
+execute(tplvar) {
+	uint32 cbp;
+	uint32 tbp;
+	uint32 ir;
+	uint32 word;
+	uint32 pc;
+	uint32 var;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rd);
+	tbp = read_register_bank(RB, inst.rn);
+	ir  = read_register_bank(RB, inst.rm);
+	pc  = read_register_bank(RB, inst.rv);
+	memory_read_32(pc, var); 
+
+	// LEA
+	if (ir == 0) {
+		if ((var >> 28) != 0xf) {	// if var >= 0
+			if (memory_read_32(tbp, word)) {
+				if (memory_write_32(cbp, (word | (var * 4)))) {
+					write_register_bank(RB, inst.rd, cbp+4); //je++
+				}
+			}
+		} else {
+			if (memory_read_32(tbp+4, word)) {
+				if (memory_write_32(cbp, (word | (twosnegate(var) * 4)))) {
+					write_register_bank(RB, inst.rd, cbp+4); //je++
+				}
+			}
+		}
+		write_register_bank(RB, inst.rv, pc+4); //pc++
+	// BZ, BNZ
+	} else if (ir == 5  || ir == 6) {
+		if (memory_read_32(tbp+(ir*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+8); // BZ and BNZ do an extra je++
+			}
+		}
+		write_register_bank(RB, inst.rv, pc+4);	//pc++
+	// ENT
+	} else if (ir == 7) {
+		/*
+		if (memory_read_32(tbp+(ir*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
+			}
+		}
+		if (memory_read_32(tbp+((ir+1)*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+4);
+				cbp += 4;
+			}
+		}
+		if (var > 0) {
+			if (memory_read_32(tbp+((ir+2)*4), word)) {
+				if (memory_write_32(cbp, (word | (var * 4)))) {
+					write_register_bank(RB, inst.rd, cbp+4);
+				}
+			}
+		}
+		write_register_bank(RB, inst.rv, pc+4);
+		*/
+		write_register_bank(RB, inst.rr, 2);
+	// ADJ	
+	} else if (ir == 10) {
+		if (memory_read_32(tbp+(ir*4), word)) {
+			if (memory_write_32(cbp, (word | (var * 4)))) {
+				write_register_bank(RB, inst.rd, cbp+4);
+			}
+		}
+		write_register_bank(RB, inst.rv, pc+4);
+	} else {
+		write_register_bank(RB, inst.rr, 2);
+	}
+}
+
 execute(tplcpy) {
 	uint32 cbp;
 	uint32 tbp;
@@ -1959,10 +2040,18 @@ execute(tplcpy) {
 	tbp = read_register_bank(RB, inst.rn);
 	ir  = read_register_bank(RB, inst.rm);
 
+	if (ir == 2 || ir == 3 || ir == 4 || ir >= 78) { // no support
+		write_register_bank(RB, inst.rr, 2);
+		return;
+	} else if (ir <= 10 ) { // tplvar ones
+		write_register_bank(RB, inst.rr, 1);
+		return;
+	}
+
 	// copy words
 	if (memory_read_32(tbp+(ir*4), num_instr)) {
-		if (num_instr == 0 || ir >= 78) {	// no support for this IR - status code 1 and return early
-			write_register_bank(RB, inst.rv, 1);
+		if (word == 0) {	
+			write_register_bank(RB, inst.rr, 2);
 			return;
 		} else {
 			// 1
@@ -2003,7 +2092,7 @@ execute(tplcpy) {
 				}
 			}
 			// status code.. success
-			write_register_bank(RB, inst.rv, 0);
+			write_register_bank(RB, inst.rr, 0);
 		}
 	} 
 }
