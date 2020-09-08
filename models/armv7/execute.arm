@@ -1961,7 +1961,7 @@ execute(tplcpy) {
 
 	// copy words
 	if (memory_read_32(tbp+(ir*4), num_instr)) {
-		if (num_instr == 0 || ir >= 85) {	// no support for this IR - status code 1 and return early
+		if (num_instr == 0 || ir >= 78) {	// no support for this IR - status code 1 and return early
 			write_register_bank(RB, inst.rv, 1);
 			return;
 		} else {
