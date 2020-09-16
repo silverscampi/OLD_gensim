@@ -1970,8 +1970,6 @@ execute(tplvar) {
 
 	write_register_bank(RB, inst.rr, 0);
 
-	write_register_bank(RB, inst.rr, 0);
-
 	// LEA
 	if (ir == 0) {
 		if (svar >= 0) {	// if var >= 0
