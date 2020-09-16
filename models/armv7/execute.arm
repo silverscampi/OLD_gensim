@@ -1958,36 +1958,34 @@ execute(tplvar) {
 	uint32 word;
 	uint32 pc;
 	uint32 var;
+	sint32 svar;
 
 	// get operands
 	cbp = read_register_bank(RB, inst.rd);
 	tbp = read_register_bank(RB, inst.rn);
 	ir  = read_register_bank(RB, inst.rm);
 	pc  = read_register_bank(RB, inst.rv);
-	memory_read_32(pc, var); 
+	memory_read_32(pc, var);
+	svar = (sint32) var;
 
 	write_register_bank(RB, inst.rr, 0);
 
 	// LEA
 	if (ir == 0) {
-		if ((var >> 28) != 0xf) {	// if var >= 0
-			if (memory_read_32(tbp, word)) {
-				if (memory_write_32(cbp, (word | (var * 4)))) {
-					write_register_bank(RB, inst.rd, cbp+4); //je++
-				}
-			}
+		if (svar >= 0) {	// if var >= 0
+			memory_read_32(tbp, word);
+			memory_write_32(cbp, (word | (var * 4)));
+			write_register_bank(RB, inst.rd, cbp+4); //je++
 		} else {
-			if (memory_read_32(tbp+4, word)) {
-				if (memory_write_32(cbp, (word | (twosnegate(var) * 4)))) {
-					write_register_bank(RB, inst.rd, cbp+4); //je++
-				}
-			}
+			memory_read_32(tbp+4, word);
+			memory_write_32(cbp, (word | (twosnegate(var) * 4)));
+			write_register_bank(RB, inst.rd, cbp+4); //je++
 		}
 		write_register_bank(RB, inst.rv, pc+4); //pc++
 
 	// SIMM
 	} else if (ir == 2) {
-		memory_read_32(tbp+(ir*4), word);
+		memory_read_32(tbp+8, word);
 		memory_write_32(cbp, word | var);
 		write_register_bank(RB, inst.rd, cbp+4);
 		write_register_bank(RB, inst.rv, pc+4);
@@ -2001,35 +1999,31 @@ execute(tplvar) {
 		write_register_bank(RB, inst.rv, pc+4);	//pc++
 	// ENT
 	} else if (ir == 8) {
-		if (memory_read_32(tbp+32, word)) {
-			if (memory_write_32(cbp, word)) {
-				write_register_bank(RB, inst.rd, cbp+4);
-				cbp += 4;
-			}
-		}
+		memory_read_32(tbp+32, word);
+		memory_write_32(cbp, word);
+		write_register_bank(RB, inst.rd, cbp+4);
+		cbp += 4;
+
 		if (memory_read_32(tbp+36, word)) {
-			if (memory_write_32(cbp, word)) {
-				write_register_bank(RB, inst.rd, cbp+4);
-				cbp += 4;
-			}
+			memory_write_32(cbp, word);
+			write_register_bank(RB, inst.rd, cbp+4);
+			cbp += 4;	
 		}
+
+		
 		if (((var >> 28) != 0x8) && (var != 0)) {	// if var > 0 (not neg and not zero)
-			if (memory_read_32(tbp+40, word)) {
-				if (memory_write_32(cbp, (word | (var * 4)))) {
-					write_register_bank(RB, inst.rd, cbp+4);
-				}
-			}
+			memory_read_32(tbp+40, word);
+			memory_write_32(cbp, (word | (var * 4)));
+			write_register_bank(RB, inst.rd, cbp+4);
 		}
 		write_register_bank(RB, inst.rv, pc+4);
 		//write_register_bank(RB, inst.rr, 2);
 	// ADJ	
 	} else if (ir == 11) {
-		if (memory_read_32(tbp+(ir*4), word)) {
-			if (memory_write_32(cbp, (word | (var * 4)))) {
-				write_register_bank(RB, inst.rd, cbp+4);
-			}
-		}
-		write_register_bank(RB, inst.rv, pc+4);
+		memory_read_32(tbp+(ir*4), word);
+		memory_write_32(cbp, (word | (var * 4)));
+		write_register_bank(RB, inst.rd, cbp+4);
+		write_register_bank(RB, inst.rv, pc+4); //pc++
 	} else {
 		write_register_bank(RB, inst.rr, 2);
 	}
