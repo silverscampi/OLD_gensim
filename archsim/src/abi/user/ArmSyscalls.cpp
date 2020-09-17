@@ -1480,6 +1480,12 @@ static unsigned long syscall_return_zero(archsim::core::thread::ThreadInstance* 
 {
 	return 0;
 }
+
+static unsigned long syscall_return_icount(archsim::core::thread::ThreadInstance* cpu)
+{
+	return cpu->GetMetrics().InstructionCount.get_value();
+}
+
 static unsigned long syscall_return_enosys(archsim::core::thread::ThreadInstance* cpu)
 {
 	return -ENOSYS;
@@ -1511,6 +1517,8 @@ static int sys_nop()
 {
 	return 0;
 }
+
+DEFINE_SYSCALL(arm, 0xf000f, syscall_return_icount, "icount()");
 
 DEFINE_SYSCALL(arm, __NR_arm_exit, sys_exit, "exit()");
 DEFINE_SYSCALL(arm, __NR_arm_exit_group, sys_exit, "exit_group()");
