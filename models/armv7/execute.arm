@@ -1958,11 +1958,9 @@ execute(tplbrc)
 	tbp_brc = read_register_bank(RB, inst.rn);
 
 	// just one word for first pass for now
-	if (memory_read_32(tbp_brc, word)) {
-		if (memory_write_32(cbp, word)) {
-			write_register_bank(RB, inst.rd, cbp+4);
-		}
-	}
+	memory_read_32(tbp_brc, word);
+	memory_write_32(cbp, word);
+	write_register_bank(RB, inst.rd, cbp+4);
 }
 
 ////////////////////////////////////////////////////////
