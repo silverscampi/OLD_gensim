@@ -5,6 +5,7 @@ archsim/inc/cmake-scm.h
 
 nbproject/
 *.vscode
+*.code-workspace
 
 CMakeFiles/
 
@@ -30,9 +31,7 @@ gensim/src/grammar/archc/
 gensim/src/grammar/archcasm/
 gensim/src/grammar/genC/
 gensim/src/grammar/ssa_asm/
-models/armv7/output-armv7a/
-models/risc-v/output-riscv32/
-models/risc-v/output-riscv64/
+models/*/output*
 scripts/archsim-armv7a-user
 scripts/archsim-x86_64-user
 tests/gensim-test-artifacts-prefix/
