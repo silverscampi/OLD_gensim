@@ -1520,8 +1520,13 @@ static int sys_nop()
 
 DEFINE_SYSCALL(arm, 0xf000f, syscall_return_icount, "icount()");
 
+<<<<<<< HEAD
 DEFINE_SYSCALL(arm, __NR_arm_exit, sys_exit, "exit(%d)");
 DEFINE_SYSCALL(arm, __NR_arm_exit_group, sys_exit, "exit_group(%d)");
+=======
+DEFINE_SYSCALL(arm, __NR_arm_exit, sys_exit, "exit()");
+DEFINE_SYSCALL(arm, __NR_arm_exit_group, sys_exit, "exit_group()");
+>>>>>>> 32ad454dadfa5fdfba1304ff85a090506faaed63
 
 DEFINE_SYSCALL(arm, __NR_arm_open, sys_open, "open(path=%p, mode=%d, flags=%d)");
 DEFINE_SYSCALL(arm, __NR_arm_openat, sys_openat, "open(dirfd=%u, path=%p, mode=%d, flags=%d)");
