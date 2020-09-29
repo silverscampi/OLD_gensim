@@ -1999,9 +1999,11 @@ execute(tplvar) {
 		write_register_bank(RB, inst.rv, pc+4);	//pc++
 	// ENT
 	} else if (ir == 8) {
-		memory_read_32(tbp+32, word);
-		memory_write_32(cbp, word);
-		write_register_bank(RB, inst.rd, cbp+4);
+		if (memory_read_32(tbp+32, word)) {
+			memory_write_32(cbp, word);
+			write_register_bank(RB, inst.rd, cbp+4);
+		}
+
 		cbp += 4;
 
 		if (memory_read_32(tbp+36, word)) {
