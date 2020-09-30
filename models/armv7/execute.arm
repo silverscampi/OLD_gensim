@@ -1965,7 +1965,8 @@ execute(tplvar) {
 
 	// get operands
 	cbp = read_register_bank(RB, inst.rd);
-	tbp = read_register_bank(RB, inst.rn);
+	//tbp = read_register_bank(RB, inst.rn);
+	tbp = read_register(TBUFBASE);
 	ir  = read_register_bank(RB, inst.rm);
 	pc  = read_register_bank(RB, inst.rv);
 	memory_read_32(pc, var);
@@ -2005,9 +2006,8 @@ execute(tplvar) {
 		if (memory_read_32(tbp+32, word)) {
 			memory_write_32(cbp, word);
 			write_register_bank(RB, inst.rd, cbp+4);
+			cbp += 4;
 		}
-
-		cbp += 4;
 
 		if (memory_read_32(tbp+36, word)) {
 			memory_write_32(cbp, word);
@@ -2015,14 +2015,13 @@ execute(tplvar) {
 			cbp += 4;	
 		}
 
-		
 		if (((var >> 28) != 0x8) && (var != 0)) {	// if var > 0 (not neg and not zero)
 			memory_read_32(tbp+40, word);
 			memory_write_32(cbp, (word | (var * 4)));
 			write_register_bank(RB, inst.rd, cbp+4);
 		}
-		write_register_bank(RB, inst.rv, pc+4);
-		//write_register_bank(RB, inst.rr, 2);
+		write_register_bank(RB, inst.rv, pc+4); //pc++
+
 	// ADJ	
 	} else if (ir == 11) {
 		memory_read_32(tbp+(ir*4), word);
@@ -2043,7 +2042,8 @@ execute(tplcpy) {
 
 	// get operands
 	cbp = read_register_bank(RB, inst.rd);
-	tbp = read_register_bank(RB, inst.rn);
+	//tbp = read_register_bank(RB, inst.rn);
+	tbp = read_register(TBUFBASE);
 	ir  = read_register_bank(RB, inst.rm);
 
 	if (ir == 4 || ir == 5 || ir == 17 || ir > 78) { // no support
