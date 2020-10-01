@@ -1980,6 +1980,14 @@ execute(tplvar) {
 			}
 		}
 		write_register_bank(RB, inst.rv, pc+4);	//pc++
+
+	// SIMM
+	} else if (ir == 2) {
+		memory_read_32(tbp+(ir*4), word);
+		memory_write_32(cbp, word | var);
+		write_register_bank(RB, inst.rd, cbp+4);
+		write_register_bank(RB, inst.rv, pc+4);
+
 	} else {
 		// no support yet
 		write_register_bank(RB, inst.rs, 2);
