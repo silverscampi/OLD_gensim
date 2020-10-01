@@ -12,6 +12,10 @@ helper uint32 read_gpr(uint32 index) {
 	}
 }
 
+helper uint32 twosnegate(uint32 twos) {
+	return (~(twos - 1));
+}
+
 execute(pld)
 {
 
@@ -1958,7 +1962,29 @@ execute(tplvar) {
 	pc  = read_register_bank(RB, inst.rv);
 	memory_read_32(pc, var); 
 
-	write_register_bank(RB, inst.rs, 2);
+	write_register_bank(RB, inst.rs, 0);
+	
+	// LEA
+	if (ir == 0) {
+		if ((var >> 28) != 0xf) {	// if var >= 0
+			if (memory_read_32(tbp, word)) {
+				if (memory_write_32(cbp, (word | (var * 4)))) {
+					write_register_bank(RB, inst.rd, cbp+4); //je++
+				}
+			}
+		} else {
+			if (memory_read_32(tbp+4, word)) {
+				if (memory_write_32(cbp, (word | (twosnegate(var) * 4)))) {
+					write_register_bank(RB, inst.rd, cbp+4); //je++
+				}
+			}
+		}
+		write_register_bank(RB, inst.rv, pc+4);	//pc++
+	} else {
+		// no support yet
+		write_register_bank(RB, inst.rs, 2);
+	}
+
 }
 
 execute(tplcpy) {
