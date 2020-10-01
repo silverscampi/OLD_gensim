@@ -55,6 +55,10 @@ AC_ISA(arm)
 	ac_format Type_MMSR2 = "%cond:4 %op!:3 %func11!:2 %r:1 %func12!:2 %fieldmask:4 0xf:4 %rotate:4 %imm8:8";
 	/*ac_format Type_WFI = "%cond:4 0x32:8 0x0:4 %sbo!:4 %sbz!:4 0x03:8";*/
 
+	/* Custom template JIT instruction */
+	//ac_format Type_TMPL = "0xf7:8 %fun:4 %rd:4 %rn:4 %rm:4 0xf0:8";
+	ac_format Type_TMPL = "0xf7f:12 %rd:4 %rn:4 %rm:4 %rs:4 0x0:4";
+
 	@notpred
 	ac_format Type_PLD = "0xf:4 0x1:2 %i:1 0x1:1 %u:1 0x5:3 %rn:4, 0xf:4 %addr:12";
 
@@ -127,6 +131,9 @@ AC_ISA(arm)
 	ac_instr<Type_MCLZ> clz;
 	ac_instr<Type_MMSR1> mrs, msr1;
 	ac_instr<Type_MMSR2> msr2;
+
+	// Custom template JIT instructions
+	ac_instr<Type_TMPL> tplcpy;
 
 	//  DSP multiplication instructions 
 	// The type of LSE Load / Store has DSP instructions (LDRD and strd)
@@ -386,6 +393,9 @@ AC_ISA(arm)
 	ac_behaviour msr1;
 	ac_behaviour msr2;
 	ac_behaviour wfi;
+
+	/*** Custom template JIT instructions ***/
+	ac_behaviour tplcpy;
 
 	/*** DSP multiplication instructions ***/ 
 //	ac_behaviour dsmla;
@@ -1405,6 +1415,12 @@ AC_ISA(arm)
 		/**************************************/
 		/*        Special Instructions        */
 		/**************************************/
+
+		/**************************************/	
+		/*  Custom Template JIT Instructions  */
+		/**************************************/	
+		tplcpy.set_behaviour(tplcpy);	// f7f...f0		
+
 
 		/**************************************/
 		/*          MBKPT Instructions        */

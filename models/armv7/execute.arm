@@ -1938,6 +1938,75 @@ execute(mrc_fpu)
 	take_exception(11, address_of_next_instruction());
 }
 
+
+////////////////////////////////////////////////////////
+////	Template Instructions
+////////////////////////////////////////////////////////
+execute(tplcpy) {
+	uint32 cbp;
+	uint32 tbp;
+	uint32 ir;
+	uint32 num_instr;
+	uint32 word;
+	uint32 status;
+	
+	// get operands
+	cbp = read_register_bank(RB, inst.rd);
+	tbp = read_register_bank(RB, inst.rn);
+	ir  = read_register_bank(RB, inst.rm);
+
+	// copy words
+	if (memory_read_32(tbp+(ir*4), num_instr)) {
+		if (ir < 12 || ir > 78) {	// no support for this IR - status code 2 and fall back to amacc
+			write_register_bank(RB, inst.rs, 2);
+			return;
+		} else {
+			// 1
+			if (memory_read_32(tbp+((ir+1)*4), word)) {
+				if (memory_write_32(cbp, word)) {
+					write_register_bank(RB, inst.rd, cbp+4);
+					cbp += 4;
+				}
+			}
+
+			// 2
+			if (num_instr >= 2) {
+				if (memory_read_32(tbp+((ir+2)*4), word)) {
+					if (memory_write_32(cbp, word)) {
+						write_register_bank(RB, inst.rd, cbp+4);
+						cbp += 4;
+					}
+				}
+			}
+
+			// 3
+			if (num_instr >= 3) {
+				if (memory_read_32(tbp+((ir+3)*4), word)) {
+					if (memory_write_32(cbp, word)) {
+						write_register_bank(RB, inst.rd, cbp+4);
+						cbp += 4;
+					}
+				}
+			}
+
+			// 4
+			if (num_instr >= 4) {
+				if (memory_read_32(tbp+((ir+4)*4), word)) {
+					if (memory_write_32(cbp, word)) {
+						write_register_bank(RB, inst.rd, cbp+4);
+						cbp += 4;
+					}
+				}
+			}
+			// status code.. success
+			write_register_bank(RB, inst.rs, 0);
+		}
+	}
+}
+
+
+
+
 ////////////////////////////////////////////////////////
 ////	CLS instructions
 ////////////////////////////////////////////////////////
