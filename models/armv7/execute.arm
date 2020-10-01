@@ -1997,6 +1997,15 @@ execute(tplvar) {
 		}
 		write_register_bank(RB, inst.rv, pc+4);	//pc++
 
+	// ADJ
+	} else if (ir == 11) {
+		if (memory_read_32(tbp+44, word)) {
+			if (memory_write_32(cbp, (word | (var * 4)))) {
+				write_register_bank(RB, inst.rd, cbp+4);
+			}
+		}
+		write_register_bank(RB, inst.rv, pc+4);
+	
 	} else {
 		// no support yet
 		write_register_bank(RB, inst.rs, 2);
