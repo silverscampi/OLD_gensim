@@ -1988,6 +1988,15 @@ execute(tplvar) {
 		write_register_bank(RB, inst.rd, cbp+4);
 		write_register_bank(RB, inst.rv, pc+4);
 
+	// BZ, BNZ
+	} else if (ir == 6 || ir == 7) {
+		if (memory_read_32(tbp+(ir*4), word)) {
+			if (memory_write_32(cbp, word)) {
+				write_register_bank(RB, inst.rd, cbp+8); // BZ and BNZ do an extra je++
+			}
+		}
+		write_register_bank(RB, inst.rv, pc+4);	//pc++
+
 	} else {
 		// no support yet
 		write_register_bank(RB, inst.rs, 2);
