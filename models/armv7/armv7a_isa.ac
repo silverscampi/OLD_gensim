@@ -56,7 +56,7 @@ AC_ISA(arm)
 	/*ac_format Type_WFI = "%cond:4 0x32:8 0x0:4 %sbo!:4 %sbz!:4 0x03:8";*/
 
 	/* Custom template JIT instruction */
-	//ac_format Type_TMPL = "0xf7:8 %fun:4 %rd:4 %rn:4 %rm:4 0xf0:8";
+	ac_format Type_TMPLV= "0xf7e:12 %rd:4 %rn:4 %rm:4 %rs:4 %rv:4";
 	ac_format Type_TMPL = "0xf7f:12 %rd:4 %rn:4 %rm:4 %rs:4 0x0:4";
 
 	@notpred
@@ -133,6 +133,7 @@ AC_ISA(arm)
 	ac_instr<Type_MMSR2> msr2;
 
 	// Custom template JIT instructions
+	ac_instr<Type_TMPLV> tplvar;
 	ac_instr<Type_TMPL> tplcpy;
 
 	//  DSP multiplication instructions 
@@ -395,6 +396,7 @@ AC_ISA(arm)
 	ac_behaviour wfi;
 
 	/*** Custom template JIT instructions ***/
+	ac_behaviour tplvar;
 	ac_behaviour tplcpy;
 
 	/*** DSP multiplication instructions ***/ 
@@ -1418,8 +1420,9 @@ AC_ISA(arm)
 
 		/**************************************/	
 		/*  Custom Template JIT Instructions  */
-		/**************************************/	
-		tplcpy.set_behaviour(tplcpy);	// f7f...f0		
+		/**************************************/
+		tplvar.set_behaviour(tplvar);	// f72.....
+		tplcpy.set_behaviour(tplcpy);	// f7f....0		
 
 
 		/**************************************/

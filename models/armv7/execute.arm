@@ -1942,6 +1942,25 @@ execute(mrc_fpu)
 ////////////////////////////////////////////////////////
 ////	Template Instructions
 ////////////////////////////////////////////////////////
+
+execute(tplvar) {
+	uint32 cbp;
+	uint32 tbp;
+	uint32 ir;
+	uint32 word;
+	uint32 pc;
+	uint32 var;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rd);
+	tbp = read_register_bank(RB, inst.rn);
+	ir  = read_register_bank(RB, inst.rm);
+	pc  = read_register_bank(RB, inst.rv);
+	memory_read_32(pc, var); 
+
+	write_register_bank(RB, inst.rs, 2);
+}
+
 execute(tplcpy) {
 	uint32 cbp;
 	uint32 tbp;
@@ -1955,9 +1974,17 @@ execute(tplcpy) {
 	tbp = read_register_bank(RB, inst.rn);
 	ir  = read_register_bank(RB, inst.rm);
 
+	if (ir==4 || ir==5 || ir==17 || ir > 78) {		// no support
+		write_register_bank(RB, inst.rs, 2);
+		return;
+	} else if (ir < 12) {	// tplvar ones
+		write_register_bank(RB, inst.rs, 1);
+		return;
+	}	
+
 	// copy words
 	if (memory_read_32(tbp+(ir*4), num_instr)) {
-		if (ir < 12 || ir > 78) {	// no support for this IR - status code 2 and fall back to amacc
+		if (num_instr == 0) {	// no support for this IR - status code 2 and fall back to amacc
 			write_register_bank(RB, inst.rs, 2);
 			return;
 		} else {
