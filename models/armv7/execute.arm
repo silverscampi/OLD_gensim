@@ -1954,6 +1954,7 @@ execute(tplvar) {
 	uint32 word;
 	uint32 pc;
 	uint32 var;
+	sint32 svar;
 
 	// get operands
 	cbp = read_register_bank(RB, inst.rd);
@@ -1961,12 +1962,13 @@ execute(tplvar) {
 	ir  = read_register_bank(RB, inst.rm);
 	pc  = read_register_bank(RB, inst.rv);
 	memory_read_32(pc, var); 
+	svar = (sint32) var;
 
 	write_register_bank(RB, inst.rs, 0);
 	
 	// LEA
 	if (ir == 0) {
-		if ((var >> 28) != 0xf) {	// if var >= 0
+		if (svar >= 0) {	// if var >= 0
 			if (memory_read_32(tbp, word)) {
 				if (memory_write_32(cbp, (word | (var * 4)))) {
 					write_register_bank(RB, inst.rd, cbp+4); //je++
