@@ -56,7 +56,6 @@ AC_ISA(arm)
 	/*ac_format Type_WFI = "%cond:4 0x32:8 0x0:4 %sbo!:4 %sbz!:4 0x03:8";*/
 
 	/* Custom template JIT instructions */
-	ac_format Type_TPL1R = "0xf7b:12 %rk:4  				 0x0:16";
 	ac_format Type_TPL2R = "0xf7c:12 %rk:4 %rm:4 			 0x0:12";
 	ac_format Type_TPL3R = "0xf7d:12 %rk:4 %rm:4 %rn:4 		 0x0:8";
 	ac_format Type_TPL4R = "0xf7e:12 %rk:4 %rm:4 %rn:4 %rp:4 0x0:4";
@@ -135,8 +134,7 @@ AC_ISA(arm)
 	ac_instr<Type_MMSR2> msr2;
 
 	/* Custom template instructions */
-	ac_instr<Type_TPL1R> tpi;
-	ac_instr<Type_TPL2R> tpc;
+	ac_instr<Type_TPL2R> tpi, tpc;
 	ac_instr<Type_TPL3R> tpcvi;
 	ac_instr<Type_TPL4R> tpcii;
 
