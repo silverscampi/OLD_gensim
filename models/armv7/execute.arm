@@ -1945,10 +1945,41 @@ execute(mrc_fpu)
 ////	CLS instructions
 ////////////////////////////////////////////////////////
 
-
+////////////////////////////////////////////////////////
+////	TMPL instructions
+////////////////////////////////////////////////////////
 // FOR TMPL INSTRS:
 // tbp = read_register(TBUFBASE)
 
+execute(tpi) {
+	uint32 cbp;
+	uint32 arg;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rk);
+	arg = read_register_bank(RB, inst.rm);
+
+	// all amacc IRs increment cbp
+	write_register_bank(RB, inst.rk, cbp+4);
+
+	// increment arg 
+	write_register_bank(RB, inst.rm, arg+4);
+}
+
+
+execute(tpc) {
+	
+}
+
+
+execute(tpcvi) {
+	
+}
+
+
+execute(tpcii) {
+	
+}
 
 ////////////////////////////////////////////////////////
 ////	MBKPT instruction
