@@ -1968,12 +1968,57 @@ execute(tpi) {
 
 
 execute(tpc) {
+	uint32 cbp;
+	uint32 tbp;
+	uint32 ir;
+	uint32 num_instr;
+	uint32 word;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rk);
+	tbp = read_register(TBUFBASE);
+	ir  = read_register_bank(RB, inst.rm);
+
+	// copy words
+	memory_read_32(tbp+(ir*4), num_instr);
+	if (num_instr >= 1) {
+		memory_read_32(tbp+((ir+1)*4), word);
+		memory_write_32(cbp, word);
+		write_register_bank(RB, inst.rk, cbp+4);
+		cbp += 4;
+	}
 	
+	if (num_instr >= 2) {
+		memory_read_32(tbp+((ir+2)*4), word);
+		memory_write_32(cbp, word);
+		write_register_bank(RB, inst.rk, cbp+4);
+		cbp += 4;
+	}
+	
+	if (num_instr >= 3) {
+		memory_read_32(tbp+((ir+3)*4), word);
+		memory_write_32(cbp, word);
+		write_register_bank(RB, inst.rk, cbp+4);
+		cbp += 4;
+	}
+	
+	if (num_instr >= 4) {
+		memory_read_32(tbp+((ir+4)*4), word);
+		memory_write_32(cbp, word);
+		write_register_bank(RB, inst.rk, cbp+4);
+		cbp += 4;
+	}
 }
 
 
 execute(tpcvi) {
-	
+	uint32 cbp;
+	uint32 tbp;
+	uint32 ir;
+	uint32 pc;
+	uint32 var;
+	uint32 num_instr;
+	uint32 word;
 }
 
 
