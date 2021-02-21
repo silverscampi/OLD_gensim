@@ -135,8 +135,7 @@ AC_ISA(arm)
 
 	/* Custom template instructions */
 	ac_instr<Type_TPL2R> tpi, tpc;
-	ac_instr<Type_TPL3R> tpcvi;
-	ac_instr<Type_TPL4R> tpcii;
+	ac_instr<Type_TPL3R> tpcii, tpcv1i, tpcv2i;
 
 	//  DSP multiplication instructions 
 	// The type of LSE Load / Store has DSP instructions (LDRD and strd)
@@ -400,8 +399,9 @@ AC_ISA(arm)
 	/*** Custom template JIT instructions ***/
 	ac_behaviour tpi;
 	ac_behaviour tpc;
-	ac_behaviour tpcvi;
 	ac_behaviour tpcii;
+	ac_behaviour tpcv1i;
+	ac_behaviour tpcv2i;
 
 
 	/*** DSP multiplication instructions ***/ 
@@ -1428,8 +1428,10 @@ AC_ISA(arm)
 		/**************************************/
 		tpi.set_behaviour(tpi);		// f7b
 		tpc.set_behaviour(tpc);		// f7c
-		tpcvi.set_behaviour(tpcvi);	// f7d
-		tpcii.set_behaviour(tpcii);	// f7e
+		tpcii.set_behaviour(tpcii);	// f7d
+		tpcv1i.set_behaviour(tpcv1i);	// f7e
+		tpcv2i.set_behaviour(tpcv2i);	// f7e
+		
 
 
 		/**************************************/
