@@ -71,10 +71,11 @@ AC_ARCH(armv7a)
 	}
 
 	// Software Thread ID Registers
-	ac_regspace(12) {
+	ac_regspace(16) {
 		slot TPIDRURW (uint32, 4, 0);
 		slot TPIDRURO (uint32, 4, 4);
 		slot TPIDRPRW (uint32, 4, 8);
+		slot TBUFBASE (uint32, 4, 12);
 	}
 
 	// FSS Regs
