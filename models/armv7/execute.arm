@@ -1951,6 +1951,34 @@ execute(mrc_fpu)
 ////////////////////////////////////////////////////////
 // tbp = read_register(TBUFBASE)
 
+execute(tpi) {
+
+}
+
+
+execute(tpc) {
+
+}
+
+
+execute(tpcv1i) {	// SIMM, ENT, ADJ
+
+}
+
+
+execute(tpcv2i) {	// LEA
+
+}
+
+
+execute(tpcii) {
+
+}
+
+
+
+
+
 
 ////////////////////////////////////////////////////////
 ////	MBKPT instruction
