@@ -132,6 +132,10 @@ AC_ISA(arm)
 	ac_instr<Type_MMSR1> mrs, msr1;
 	ac_instr<Type_MMSR2> msr2;
 
+	// Custom template instructions
+	ac_instr<Type_TPL2R> tpc, tpi;
+	ac_instr<Type_TPL3R> tpcii, tpcv1i, tpcv2i;
+
 	//  DSP multiplication instructions 
 	// The type of LSE Load / Store has DSP instructions (LDRD and strd)
 	//ac_instr<Type_DSPSM> dsmla, dsmlal, dsmul, dsmlaw, dsmulw;
@@ -390,6 +394,13 @@ AC_ISA(arm)
 	ac_behaviour msr1;
 	ac_behaviour msr2;
 	ac_behaviour wfi;
+
+	/*** Custom template instructions ***/
+	ac_behaviour tpc;
+	ac_behaviour tpi;
+	ac_behaviour tpcii;
+	ac_behaviour tpcv1i;
+	ac_behaviour tpcv2i;
 
 	/*** DSP multiplication instructions ***/ 
 //	ac_behaviour dsmla;
@@ -1409,6 +1420,26 @@ AC_ISA(arm)
 		/**************************************/
 		/*        Special Instructions        */
 		/**************************************/
+
+		/**************************************/
+		/*    Custom Template Instructions    */
+		/**************************************/
+		// Type_TPL2R 0x7fc
+		tpc.set_decoder(op=0x0);
+		tpc.set_behaviour(tpc);
+
+		tpi.set_decoder(op=0x1);
+		tpi.set_behaviour(tpi);
+
+
+		// Type_TPL3R 0x7fd
+		tpcii.set_decoder(op=0x0);
+		tpcii.set_behaviour(tpcii);
+
+		tpcv1i.set_decoder(op=0x1);
+		tpcv1i.set_behaviour(tpcv1i);
+
+		
 
 		/**************************************/
 		/*          MBKPT Instructions        */
