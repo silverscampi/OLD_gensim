@@ -2010,8 +2010,15 @@ execute(tpc) {
 	}
 }
 
+execute(tpcv1i) { // SIMM
 
-execute(tpcv1i) {	// SIMM, ENT, ADJ
+}
+
+execute(tpcv2i) {	// LEA
+
+}
+
+execute(tpcv1si) {	// ENT, ADJ
 	uint32 cbp;
 	uint32 tbp;
 	uint32 ir;
@@ -2071,9 +2078,9 @@ execute(tpcv1i) {	// SIMM, ENT, ADJ
 }
 
 
-execute(tpcv2i) {	// LEA
 
-}
+
+
 
 
 execute(tpcii) {	// BZ, BNZ
