@@ -1439,6 +1439,8 @@ AC_ISA(arm)
 		tpcv1i.set_decoder(op=0x1);
 		tpcv1i.set_behaviour(tpcv1i);
 
+		tpcv2i.set_decoder(op=0x2);
+		tpcv2i.set_behaviour(tpcv2i);
 		
 
 		/**************************************/
