@@ -1951,7 +1951,7 @@ execute(mrc_fpu)
 ////////////////////////////////////////////////////////
 // tbp = read_register(TBUFBASE)
 
-execute(tpi) {
+execute(tpi) {	// JMP, JSR
 	uint32 cbp;
 	uint32 arg;
 
@@ -2021,8 +2021,34 @@ execute(tpcv2i) {	// LEA
 }
 
 
-execute(tpcii) {
+execute(tpcii) {	// BZ, BNZ
+	uint32 cbp;
+	uint32 tbp;
+	uint32 ir;
+	uint32 pc;
+	uint32 num_instr;
+	uint32 word;
 
+	// get operands
+	cbp = read_register_bank(RB, inst.rk);
+	tbp = read_register(TBUFBASE);
+	ir  = read_register_bank(RB, inst.rm);
+	pc  = read_register_bank(RB, inst.rn);
+
+	// copy word
+	memory_read_32(tbp+(ir*20), num_instr);
+	if (num_instr == 1) {
+		memory_read_32(tbp+((ir*20)+4), word);
+		memory_write_32(cbp, word);
+		write_register_bank(RB, inst.rk, cbp+4);
+		cbp += 4;
+	}
+
+	// increment cbp (je) a second time
+	write_register_bank(RB, inst.rk, cbp+4);
+
+	// increment pc
+	write_register_bank(RB, inst.rn, pc+4);
 }
 
 
