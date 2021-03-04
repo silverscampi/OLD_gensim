@@ -2069,7 +2069,75 @@ execute(tpcv1i) { // SIMM
 
 }
 
+// this is super specific to amacc and not as 'agnostic' as the others
+// due to time constraints and horribleness of amacc 
+// the instr name is no longer descriptive
 execute(tpcv2si) {	// LEA
+	uint32 cbp;
+	uint32 tbp;
+	uint32 ir;
+	uint32 pc;
+	uint32 var;
+	sint32 svar;
+	uint32 num_instr;
+	uint32 word;
+	uint32 word2;
+	uint32 offset;
+
+	// get operands
+	cbp = read_register_bank(RB, inst.rk);
+	tbp = read_register(TBUFBASE);
+	ir  = read_register_bank(RB, inst.rm);
+	pc  = read_register_bank(RB, inst.rn);
+	memory_read_32(pc, var); 
+	offset = tbp+(ir*20);
+
+/*
+	// copy words
+	memory_read_32(offset, num_instr);
+	if (num_instr >= 1) {
+		memory_read_32(offset+4, word);
+		memory_write_32(cbp, word);
+		write_register_bank(RB, inst.rk, cbp+4);
+		cbp += 4;
+	}
+*/
+
+	svar = (sint32) var;
+	var = (uint32) custom_abs(svar);
+
+	// var positive, so we add
+	if (svar >= 0) {
+		memory_read_32(offset+4, word);
+		memory_write_32(cbp, (word | var*4));
+	
+	// var negative, so we subtract
+	} else {
+		memory_read_32(offset+8, word);
+		memory_write_32(cbp, (word | var*4));
+	}
+
+	// increment je/cbp
+	write_register_bank(RB, inst.rk, cbp+4);
+
+	/*
+ 
+// fill last word:			ADDMI
+	memory_read_32(offset+(num_instr*4), word);
+	cbp -= 4;
+	memory_write_32(cbp, (word | var*4));
+
+
+// fill second last word?
+	num_instr -= 1;
+	memory_read_32(offset+(num_instr*4), word2);
+	cbp -= 4;
+	memory_write_32(cbp, (word2 | var*4));
+*/
+
+	// increment pc
+	write_register_bank(RB, inst.rn, pc+4);
+
 
 }
 
@@ -2894,6 +2962,19 @@ execute(udf)
 ///////////////////////////////////////////////////////////
 ////  Helper Functions Info
 ///////////////////////////////////////////////////////////
+
+///
+
+helper	sint32 custom_abs(sint32 n) {
+	if (n < 0) {
+		return (n * -1);
+	}
+	return n;
+}
+
+
+
+///
 
 helper  uint8 pc_check(uint32 reg)
 {
